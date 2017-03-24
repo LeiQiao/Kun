@@ -5,7 +5,7 @@ import os
 import shutil
 
 # load keras model
-k2c = keras2cpp("./test/model_structure.json", "./test/model_weight.h5", None, "mnist")
+k2c = keras2cpp("./test/mnist_keras_model/model_structure.json", "./test/mnist_keras_model/model_weight.h5", None, "mnist")
 
 # build unit test
 ut = UTProjBuilder(k2c)
