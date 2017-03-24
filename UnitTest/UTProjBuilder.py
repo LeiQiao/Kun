@@ -145,7 +145,7 @@ class UTProjBuilder:
             check_diff_pass = True
             for index in range(len(tf_result)):
                 diff = tf_result[index] - cpp_result[index]
-                if abs(diff) > 0.000001:
+                if abs(diff) > 0.00001:
                     print("index ("+str(index)+"): tensorflow output: ("+str(tf_result[index])+") cpp output: ("+str(cpp_result[index])+") diff: "+str(diff))
                     check_diff_pass = False
             
