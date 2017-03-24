@@ -1,0 +1,13 @@
+
+/////////////////////////////////////////////////////////////
+// %NAME% 摊平矩阵
+// input: 多通道二维图片，维度<CHANNELS, ROWS, COLS>
+// output: 根据HWC格式摊平成一位数组
+void %NAME%(const Eigen::Tensor<%CPP_TYPE%, 3, Eigen::RowMajor>& input,
+               Eigen::Tensor<%CPP_TYPE%, 1, Eigen::RowMajor>& output)
+{
+    // 摊平成一维
+    Eigen::Tensor<%CPP_TYPE%, 1>::Dimensions dims(%OUTPUT_LENGTH%);
+    output = input.reshape(dims);
+}
+

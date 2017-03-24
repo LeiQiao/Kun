@@ -1,0 +1,10 @@
+
+/////////////////////////////////////////////////////////////
+// %NAME% 激活函数
+// input: 输入Tensor
+// output: 输出Tensor
+void %NAME%(const Eigen::Tensor<%CPP_TYPE%, %DIMENSION_COUNTS%, Eigen::RowMajor>& input, Eigen::Tensor<%CPP_TYPE%, %DIMENSION_COUNTS%, Eigen::RowMajor>& output)
+{
+    output = input;
+}
+

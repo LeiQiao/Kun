@@ -1,0 +1,59 @@
+
+/////////////////////////////////////////////////////////////
+// %NAME% 多通道卷积 数据格式 NHWC
+// input: 多通道二维图片，维度<ROWS, COLS, CHANNELS>
+// output: %CHANNELS%个卷积核卷积后的特征，维度<ROWS, COLS, CHANNELS>
+void %NAME%(const Eigen::Tensor<%CPP_TYPE%, 3, Eigen::RowMajor>& input, Eigen::Tensor<%CPP_TYPE%, 3, Eigen::RowMajor>& output)
+{
+    // 将多通道转成单通道数组
+    Eigen::Tensor<%CPP_TYPE%, 2, Eigen::RowMajor> input_channels[%CHANNELS%];
+    for( int %NAME%_channel_index = 0 ; %NAME%_channel_index < %CHANNELS%; %NAME%_channel_index++ )
+    {
+        input_channels[%NAME%_channel_index] = input.chip<2>(%NAME%_channel_index);
+    }
+
+    // 卷积核维度
+    Eigen::array<ptrdiff_t, 2> %NAME%_dimensions;
+    %NAME%_dimensions[0] = 0;
+    %NAME%_dimensions[1] = 1;
+    
+    // 卷积输出大小
+    output = Eigen::Tensor<%CPP_TYPE%, 3, Eigen::RowMajor>(%OUTPUT_ROWS%, %OUTPUT_COLS%, %KERNEL_COUNTS%);
+    
+    // 所有卷积核
+    Eigen::Tensor<%CPP_TYPE%, 4, Eigen::RowMajor> %NAME%_all_kernels(%KERNEL_ROWS%, %KERNEL_COLS%, %CHANNELS%, %KERNEL_COUNTS%);
+    memcpy(%NAME%_all_kernels.data(), data_kernel_%NAME%, %KERNEL_ROWS% * %KERNEL_COLS% * %CHANNELS% * %KERNEL_COUNTS% * sizeof(%CPP_TYPE%));
+    
+    // 卷积核个数
+    for( int %NAME%_kernel_index = 0; %NAME%_kernel_index < %KERNEL_COUNTS%; %NAME%_kernel_index++ )
+    {
+        Eigen::Tensor<%CPP_TYPE%, 2, Eigen::RowMajor> %NAME%_channel_result(%OUTPUT_ROWS%, %OUTPUT_COLS%);
+        %NAME%_channel_result = %NAME%_channel_result.setZero();
+        
+        // 通道数
+        for( int %NAME%_channel_index = 0; %NAME%_channel_index < %CHANNELS%; %NAME%_channel_index++ )
+        {
+            // 获取单个卷积核
+            Eigen::Tensor<%CPP_TYPE%, 2, Eigen::RowMajor> %NAME%_kernel(%KERNEL_ROWS%, %KERNEL_COLS%);
+            %NAME%_kernel = %NAME%_all_kernels.chip<3>(%NAME%_kernel_index).chip<2>(%NAME%_channel_index);
+            
+            // 保存单通道的卷积结果
+            Eigen::Tensor<%CPP_TYPE%, 2, Eigen::RowMajor> %NAME%_single_channel_result(%OUTPUT_ROWS%, %OUTPUT_COLS%);
+            
+            EigenCustom::convolve(input_channels[%NAME%_channel_index],
+                     %NAME%_kernel,
+                     %NAME%_single_channel_result,
+                     %STRIDE_X%, %STRIDE_Y%, %ZERO_PADDING%);
+            
+            // 卷积计算并加上偏置
+            %NAME%_channel_result += %NAME%_single_channel_result;
+        }
+        
+        // 获取偏置
+        %CPP_TYPE% bias = 0;
+        memcpy(&bias, data_bias_%NAME% + %NAME%_kernel_index * sizeof(%CPP_TYPE%), sizeof(%CPP_TYPE%));
+        
+        // 保存结果
+        output.chip<2>(%NAME%_kernel_index) = %NAME%_channel_result + bias;
+    }
+}

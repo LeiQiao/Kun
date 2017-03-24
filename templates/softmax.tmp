@@ -1,0 +1,29 @@
+
+/////////////////////////////////////////////////////////////
+// %NAME% 线性回归
+// input: <%SOFTMAX_LENGTH%>个元素的矩阵
+// output: <%SOFTMAX_LENGTH%>个元素的矩阵
+void %NAME%(const Eigen::Tensor<%CPP_TYPE%, %DIMENSION_COUNTS%, Eigen::RowMajor>& input, Eigen::Tensor<%CPP_TYPE%, %DIMENSION_COUNTS%, Eigen::RowMajor>& output)
+{
+    %CPP_TYPE% maxValue = 0.0;
+    %CPP_TYPE% sumValue = 0.0;
+    
+    for( int index = 0; index < %SOFTMAX_LENGTH%; index++ )
+    {
+        if( maxValue < input.data()[index] )
+        {
+            maxValue = input.data()[index];
+        }
+    }
+    for( int index = 0; index < %SOFTMAX_LENGTH%; index++ )
+    {
+        output.data()[index] = exp(input.data()[index] - maxValue);
+        sumValue += output.data()[index];
+    }
+    
+    for( int index = 0; index < %SOFTMAX_LENGTH%; index++ )
+    {
+        output.data()[index] /= sumValue;
+    }
+}
+

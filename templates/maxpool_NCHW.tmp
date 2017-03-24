@@ -1,0 +1,40 @@
+
+/////////////////////////////////////////////////////////////
+// %NAME% 多通道池化 数据格式 NCHW
+// input: 多通道二维图片，维度<CHANNELS, ROWS, COLS>
+// output: %POOL_SIZE_ROWS%x%POOL_SIZE_COLS%池化后的特征图片，维度<CHANNELS, ROWS, COLS>
+void %NAME%(const Eigen::Tensor<%CPP_TYPE%, %DIMENSION_COUNTS%, Eigen::RowMajor>& input,
+            Eigen::Tensor<%CPP_TYPE%, %DIMENSION_COUNTS%, Eigen::RowMajor>& output)
+{
+#ifndef INDEX_%INPUT_CHANNELS%_%INPUT_ROWS%_%INPUT_COLS%
+#define INDEX_%INPUT_CHANNELS%_%INPUT_ROWS%_%INPUT_COLS%(DATA, CHANNEL, ROW, COL) \
+    DATA[(CHANNEL)*(%INPUT_ROWS%)*(%INPUT_COLS%)+(ROW)*(%INPUT_COLS%)+(COL)]
+#endif
+    
+#ifndef INDEX_%INPUT_CHANNELS%_%OUTPUT_ROWS%_%OUTPUT_COLS%
+#define INDEX_%INPUT_CHANNELS%_%OUTPUT_ROWS%_%OUTPUT_COLS%(DATA, CHANNEL, ROW, COL) \
+    DATA[(CHANNEL)*(%OUTPUT_ROWS%)*(%OUTPUT_COLS%)+(ROW)*(%OUTPUT_COLS%)+(COL)]
+#endif
+    const %CPP_TYPE%* srcMatrix = input.data();
+    %CPP_TYPE%* dstMatrix = output.data();
+    
+    for( int channel_index = 0; channel_index < %INPUT_CHANNELS%; channel_index++ )
+    {
+        for( int row_index = 0; row_index < %OUTPUT_ROWS%; row_index++ )
+        {
+            for( int col_index = 0; col_index < %OUTPUT_COLS%; col_index++ )
+            {
+                %CPP_TYPE% maxValue = INDEX_%INPUT_CHANNELS%_%INPUT_ROWS%_%INPUT_COLS%(srcMatrix, channel_index, row_index*%POOL_SIZE_ROWS%, col_index*%POOL_SIZE_COLS%);
+                for( int x = 0; x < %POOL_SIZE_ROWS%; x++ )
+                {
+                    for( int y = 0; y < %POOL_SIZE_COLS%; y++ )
+                    {
+                        maxValue = Eigen::numext::maxi(maxValue, INDEX_%INPUT_CHANNELS%_%INPUT_ROWS%_%INPUT_COLS%(srcMatrix, channel_index, row_index*%POOL_SIZE_ROWS%+x, col_index*%POOL_SIZE_COLS%+y));
+                    }
+                }
+                INDEX_%INPUT_CHANNELS%_%OUTPUT_ROWS%_%OUTPUT_COLS%(dstMatrix, channel_index, row_index, col_index) = maxValue;
+            }
+        }
+    }
+}
+

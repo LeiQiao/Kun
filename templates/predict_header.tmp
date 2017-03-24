@@ -1,0 +1,25 @@
+//
+//  %FILE_NAME%
+//
+
+#ifndef __%CAPTAL_MODEL_NAME%_HPP__
+#define __%CAPTAL_MODEL_NAME%_HPP__
+
+#include "Eigen.h"
+
+namespace %MODEL_NAME% {
+
+void predict(const Eigen::Tensor<%CPP_TYPE%, %INPUT_DISMENSIONS%, Eigen::RowMajor>& input,
+             Eigen::Tensor<%CPP_TYPE%, %OUTPUT_DISMENSIONS%, Eigen::RowMajor>& output);
+
+#ifdef DEBUG
+void predict(const Eigen::Tensor<%CPP_TYPE%, %INPUT_DISMENSIONS%, Eigen::RowMajor>& input,
+             Eigen::Tensor<%CPP_TYPE%, %OUTPUT_DISMENSIONS%, Eigen::RowMajor>& output,
+             bool unit_test);
+#endif
+
+std::string getMappingTableValue(Eigen::Index index);
+
+};
+
+#endif /* __%CAPTAL_MODEL_NAME%_HPP__ */

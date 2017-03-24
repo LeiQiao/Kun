@@ -1,0 +1,135 @@
+#ifdef DEBUG
+    
+#include "sys/time.h"
+double getTimeFromLastOp()
+{
+    static struct timeval lastTime;
+    static bool haveLastTime = false;
+    if( !haveLastTime )
+    {
+        gettimeofday(&lastTime, NULL);
+        haveLastTime = true;
+    }
+    
+    struct timeval curTime;
+    gettimeofday(&curTime, NULL);
+    double timeuse = curTime.tv_sec - lastTime.tv_sec + (curTime.tv_usec - lastTime.tv_usec) / 1000000.0;
+    
+    gettimeofday(&lastTime, NULL);
+    return timeuse;
+}
+    
+static struct timeval firstTime;
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#ifdef SAVE_UNIT_TEST_TENSOR
+#include <stdarg.h>
+#endif // SAVE_UNIT_TEST_TENSOR
+void save_data_to_file(const char* filename, const uint8_t* data, unsigned long dataLen, uint32_t sectionLen, bool onByte)
+{
+    FILE* f = fopen(filename, "wb");
+    for( int i=0; i<dataLen / sizeof(%CPP_TYPE%); i++ )
+    {
+        char str[100];
+        if( onByte )
+        {
+            for( int j=0; j<sizeof(%CPP_TYPE%); j++ )
+            {
+                sprintf(str, "0x%02X, ", data[i*sizeof(%CPP_TYPE%)+j]);
+                fwrite(str, strlen(str), 1, f);
+                if( ((i*sizeof(%CPP_TYPE%)+j) % sectionLen) == (sectionLen-1) )
+                {
+                    sprintf(str, "\n    ");
+                    fwrite(str, strlen(str), 1, f);
+                }
+            }
+        }
+        else
+        {
+            char fmt[20];
+            if( (strcmp(typeid(%CPP_TYPE%).name(), typeid(float).name()) == 0) ||
+               (strcmp(typeid(%CPP_TYPE%).name(), typeid(double).name()) == 0) )
+            {
+                sprintf(fmt, "%%.06f, ");
+            }
+            else
+            {
+                sprintf(fmt, "%%d, ");
+            }
+            const %CPP_TYPE%* %CPP_TYPE%_data = (const %CPP_TYPE%*)data;
+            sprintf(str, fmt, %CPP_TYPE%_data[i]);
+            fwrite(str, strlen(str), 1, f);
+            if( (i % sectionLen) == (sectionLen-1) )
+            {
+                sprintf(str, "\n    ");
+                fwrite(str, strlen(str), 1, f);
+            }
+        }
+    }
+    fclose(f);
+}
+
+void start_unit_test_function(const char* input_name, const %CPP_TYPE%* input_tensor, int dim_count, ...)
+{
+    gettimeofday(&firstTime, NULL);
+    
+    getTimeFromLastOp();
+}
+
+void unit_test_function(const char* output_name, const %CPP_TYPE%* output_tensor, int dim_count, ...)
+{
+    printf("%s cost: %.6f\n", output_name, getTimeFromLastOp());
+
+#ifdef SAVE_UNIT_TEST_TENSOR
+    std::vector<int> dimensions;
+    int tensor_length = sizeof(%CPP_TYPE%);
+    
+    va_list args;
+    va_start(args, dim_count);
+    for( int i=0; i<dim_count; i++ )
+    {
+        int dim_size = va_arg(args, int);
+        dimensions.push_back(dim_size);
+        tensor_length *= dim_size;
+    }
+    va_end(args);
+    
+    
+    std::stringstream path;
+    path << "./" << output_name << "/";
+    rmdir(path.str().c_str());
+    mkdir(path.str().c_str(), S_IRWXU|S_IRWXG|S_IRWXO);
+
+    if( dim_count == 1 )
+    {
+        path << output_name;
+        save_data_to_file(path.str().c_str(), (const uint8_t*)output_tensor, tensor_length, 16, false);
+    }
+    else if( dim_count == 3 )
+    {
+        Eigen::Tensor<%CPP_TYPE%, 3, Eigen::RowMajor> tensor;
+        tensor.resize(dimensions[0], dimensions[1], dimensions[2]);
+        memcpy(tensor.data(), output_tensor, tensor_length);
+        for( int i=0; i<dimensions[2]; i++ )
+        {
+            std::stringstream ss;
+            ss << path.str() << output_name << "_" << (i+1);
+            Eigen::Tensor<%CPP_TYPE%, 2, Eigen::RowMajor> sub_tensor = tensor.chip<2>(i);
+            save_data_to_file(ss.str().c_str(), (const uint8_t*)sub_tensor.data(), tensor_length / dimensions[2], dimensions[0], false);
+        }
+    }
+#endif // SAVE_UNIT_TEST_TENSOR
+}
+
+void end_unit_test_function(const char* output_name, const %CPP_TYPE%* output_tensor, int dim_count, ...)
+{
+    struct timeval curTime;
+    gettimeofday(&curTime, NULL);
+    double timeuse = curTime.tv_sec - firstTime.tv_sec + (curTime.tv_usec - firstTime.tv_usec) / 1000000.0;
+    printf("all cost: %.6f\n", timeuse);
+    printf("=========================\n");
+}
+
+#endif // DEBUG
+

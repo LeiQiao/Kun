@@ -1,0 +1,25 @@
+
+/////////////////////////////////////////////////////////////
+// %NAME% 矩阵相乘
+// input: <%INPUT_LENGTH%>个元素的矩阵
+// output: <%OUTPUT_LENGTH%>个元素的矩阵
+void %NAME%(const Eigen::Tensor<%CPP_TYPE%, 1, Eigen::RowMajor>& input,
+              Eigen::Tensor<%CPP_TYPE%, 1, Eigen::RowMajor>& output)
+{
+    Eigen::Tensor<%CPP_TYPE%, 2, Eigen::RowMajor> %NAME%_input_matrix(1, %INPUT_LENGTH%);
+    memcpy(%NAME%_input_matrix.data(), input.data(), %INPUT_LENGTH%*sizeof(%CPP_TYPE%));
+    
+    // 获取权重矩阵<%INPUT_LENGTH% * %OUTPUT_LENGTH%>
+    Eigen::Tensor<%CPP_TYPE%, 2, Eigen::RowMajor> %NAME%(%INPUT_LENGTH%, %OUTPUT_LENGTH%);
+    memcpy(%NAME%.data(), %WEIGHT_DATA_NAME%, %INPUT_LENGTH%*%OUTPUT_LENGTH%*sizeof(%CPP_TYPE%));
+    
+    Eigen::array<Eigen::Tensor<%CPP_TYPE%, 1>::DimensionPair, 1> dims = {{Eigen::Tensor<%CPP_TYPE%, 1>::DimensionPair(1, 0)}};
+    Eigen::Tensor<%CPP_TYPE%, 2, Eigen::RowMajor> %NAME%_output_matrix = %NAME%_input_matrix.contract(%NAME%, dims);
+    
+    memcpy(output.data(), %NAME%_output_matrix.data(), %OUTPUT_LENGTH%*sizeof(%CPP_TYPE%));
+
+    Eigen::Tensor<%CPP_TYPE%, 1, Eigen::RowMajor> bias(%OUTPUT_LENGTH%);
+    memcpy(bias.data(), %BIAS_DATA_NAME%, %OUTPUT_LENGTH%*sizeof(%CPP_TYPE%));
+    output += bias;
+}
+
