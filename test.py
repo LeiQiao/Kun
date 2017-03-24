@@ -1,6 +1,8 @@
 from Keras.keras2cpp import keras2cpp
 from UnitTest.UTProjBuilder import UTProjBuilder
 import numpy as np
+import os
+import shutil
 
 # load keras model
 k2c = keras2cpp("./test/model_structure.json", "./test/model_weight.h5", None, "mnist")
@@ -21,6 +23,8 @@ ut.test(tensor)
 ut.remove_project()
 
 # dump cpp files from keras model
+if os.path.exists("./test/cpp/"): shutil.rmtree("./test/cpp/")
+os.mkdir("./test/cpp/")
 k2c.save_to_path("./test/cpp/")
 
 quit()
