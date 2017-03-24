@@ -19,4 +19,7 @@ make
 mnist_predict ../0.png ../1.png
 ```
 
+## test_data.hpp
+Incase you do not have opencv and do not want to download it, this file contains 0-9.png data. you can use this file to test in main.cpp
+
 

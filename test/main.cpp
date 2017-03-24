@@ -1,6 +1,6 @@
 #include <iostream>
-#include "opencv2/opencv.hpp"
 #include "cpp/mnist.hpp"
+#include "opencv2/opencv.hpp"
 
 int main(int argc, const char* argv[])
 {
