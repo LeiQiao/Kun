@@ -5,18 +5,18 @@ import os
 import shutil
 
 # load keras model
-k2c = keras2cpp("../zuoye/model/step1.json", "../zuoye/model/step1.h5", None, "idcard_step1")
+k2c = keras2cpp("./test/mnist_keras_model/model_structure.json", "./test/mnist_keras_model/model_weight.h5", None, "mnist")
 
 # build unit test
 ut = UTProjBuilder(k2c)
 ut.build_project()
 
 # unit test 1
-tensor = np.zeros((1, 3, 30, 428))
+tensor = np.zeros((1, 28, 28, 1))
 ut.test(tensor)
 
 # unit test 2
-tensor = np.ones((1, 3, 30, 428))
+tensor = np.ones((1, 28, 28, 1))
 ut.test(tensor)
 
 # remove unit test

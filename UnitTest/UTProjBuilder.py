@@ -107,7 +107,7 @@ class UTProjBuilder:
         os.system("cmake ..")
         os.system("make")
         print("run test ...")
-        print(os.system("./"+self.code_builder.road_map.model_name+""))
+        os.system("./"+self.code_builder.road_map.model_name+"")
         os.chdir(pwd)
 
         # load every step's result
