@@ -13,13 +13,12 @@ class CPPOpCoder_Conv2D:
     bias_data = None
     stride_x = 1
     stride_y = 1
-    zero_padding = 0
+    border_type = CPPDataType.BORDER_VALID
 
     # initialize with convolution attributes
-    def __init__(self, input_shape, dim_ordering, kernel_data, bias_data, stride_x, stride_y, zero_padding):
+    def __init__(self, input_shape, dim_ordering, kernel_data, bias_data, stride_x, stride_y, border_type):
         assert len(input_shape) == 3, "input shape must have 3 dimensions, HWC or CHW"
         assert len(kernel_data.shape) == 4, "kernel shape must have 4 dimensions"
-        assert zero_padding >= 0, "zero padding must >= 0"
         assert stride_x > 0 and stride_y > 0, "stride must > 0"
 
         input_channel_count = 0
@@ -55,7 +54,7 @@ class CPPOpCoder_Conv2D:
         self.bias_data = bias_data
         self.stride_x = stride_x
         self.stride_y = stride_y
-        self.zero_padding = zero_padding
+        self.border_type = border_type
 
         # output shape & dim ordering
         output_width = 0
@@ -67,14 +66,17 @@ class CPPOpCoder_Conv2D:
         elif self.dim_ordering == CPPDataType.ORDER_NHWC:
             output_width = input_shape[1]
             output_height = input_shape[0]
-        output_width = output_width + self.zero_padding * 2
-        output_height = output_height + self.zero_padding * 2
-        output_width -= kernel_width >> 1 << 1
-        output_height -= kernel_height >> 1 << 1
-        output_width = output_width / stride_x
-        output_height = output_height / stride_y
-        if output_width > int(output_width): output_width = int(output_width) + 1
-        if output_height > int(output_height): output_height = int(output_height) + 1
+
+        if self.border_type == CPPDataType.BORDER_VALID:
+            output_width = output_width + self.zero_padding * 2
+            output_height = output_height + self.zero_padding * 2
+            output_width -= kernel_width >> 1 << 1
+            output_height -= kernel_height >> 1 << 1
+            output_width = output_width / stride_x
+            output_height = output_height / stride_y
+            if output_width > int(output_width): output_width = int(output_width) + 1
+            if output_height > int(output_height): output_height = int(output_height) + 1
+            
         if dim_ordering == CPPDataType.ORDER_NCHW:
             self.output_shape[2] = int(output_width)
             self.output_shape[1] = int(output_height)

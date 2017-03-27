@@ -16,6 +16,10 @@ FLOAT64 = 11
 ORDER_NHWC = 0
 ORDER_NCHW = 1
 
+# convolution border type
+BORDER_VALID = 0
+BORDER_SAME = 1
+
 # activation type
 ACTIVATION_LINEAR = 0
 ACTIVATION_RELU = 1

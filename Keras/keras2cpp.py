@@ -43,9 +43,9 @@ class keras2cpp:
                 stride_x = keras_layer.subsample[0]
                 stride_y = keras_layer.subsample[1]
 
-                zero_padding = 0
-                if keras_layer.border_mode != "valid": zero_padding = (kernels.shape[0] >> 1)
-                op = CPPOpCoder_Conv2D(last_output_shape, dim_ordering, kernels, biases, stride_x , stride_y, zero_padding)
+                border_type = CPPDataType.BORDER_VALID
+                if keras_layer.border_mode != "valid": border_type = CPPDataType.BORDER_SAME
+                op = CPPOpCoder_Conv2D(last_output_shape, dim_ordering, kernels, biases, stride_x , stride_y, border_type)
 
             elif layer_type == "Activation":
                 activation_type = CPPDataType.activation_type_from_keras(keras_layer.get_config()['activation'])
