@@ -11,7 +11,7 @@ import numpy as np
 from CPPCoder import CPPDataType
 from CPPCoder.CPPDataCoder import CPPDataCoder
 from Keras.keras2cpp import keras2cpp
-from Keras.keras2tensorflow import keras2tensorflow
+from keras2tensorflow.keras2tensorflow import keras2tensorflow
 
 EIGEN_URL = "https://bitbucket.org/eigen/eigen/get/60578b474802.tar.gz"
 EIGEN_SHA256 = "7527cda827aff351981ebd910012e16be4d899c28a9ae7f143ae60e7f3f7b83d"
