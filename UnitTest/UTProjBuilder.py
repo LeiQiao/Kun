@@ -82,7 +82,7 @@ class UTProjBuilder:
             return
 
         # write test data file
-        data_coder = CPPDataCoder("uint_test_data")
+        data_coder = CPPDataCoder("unit_test_data")
         data_coder.append("unit_test_data", tensor.flatten(), self.code_builder.cpp_type)
         data_coder.dump_to_file(self.project_dir+"/unit_test_data.hpp")
 

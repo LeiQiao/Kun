@@ -56,7 +56,7 @@ void convolve(const Eigen::Tensor<Scalar_, 2, Eigen::RowMajor>& input,
         Eigen::Index trim_dim1 = (kernel_dim1_length-1)/2;
         output = conv0_result.slice(Eigen::DSizes<ptrdiff_t, 2>(trim_dim0, trim_dim1),
                                     Eigen::DSizes<ptrdiff_t, 2>(input_dim0_length-trim_dim0*2,
-                                                                input_dim0_length-trim_dim1*2));
+                                                                input_dim1_length-trim_dim1*2));
         return;
     }
 #endif
@@ -77,7 +77,7 @@ void convolve(const Eigen::Tensor<Scalar_, 2, Eigen::RowMajor>& input,
         Eigen::array<ptrdiff_t, 2> dims;
         dims[0] = 0;
         dims[1] = 1;
-        output = input.convolve(kernel, dims);
+        output = paddedInput.convolve(kernel, dims);
         return;
     }
 #endif // EIGEN_VECTORIZE_NEON

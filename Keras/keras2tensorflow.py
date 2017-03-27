@@ -24,8 +24,8 @@ class keras_conv2d:
         self.weights = keras_layer.get_weights()[0]
         self.biases = keras_layer.get_weights()[1]
         self.padding = 'VALID'
-        if keras_layer.border_mode != "valid":
-            assert False, "Unsupported padding type: %s" % keras_layer.border_mode
+        if keras_layer.border_mode == "same":
+            self.padding = 'SAME'
 
     def dump_tf_layer(self, prev_tf_layer):
         w = tf.constant(self.weights)

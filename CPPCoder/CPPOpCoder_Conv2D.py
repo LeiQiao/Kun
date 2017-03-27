@@ -14,6 +14,7 @@ class CPPOpCoder_Conv2D:
     stride_x = 1
     stride_y = 1
     border_type = CPPDataType.BORDER_VALID
+    zero_padding = 0
 
     # initialize with convolution attributes
     def __init__(self, input_shape, dim_ordering, kernel_data, bias_data, stride_x, stride_y, border_type):
@@ -68,15 +69,15 @@ class CPPOpCoder_Conv2D:
             output_height = input_shape[0]
 
         if self.border_type == CPPDataType.BORDER_VALID:
-            output_width = output_width + self.zero_padding * 2
-            output_height = output_height + self.zero_padding * 2
             output_width -= kernel_width >> 1 << 1
             output_height -= kernel_height >> 1 << 1
             output_width = output_width / stride_x
             output_height = output_height / stride_y
             if output_width > int(output_width): output_width = int(output_width) + 1
             if output_height > int(output_height): output_height = int(output_height) + 1
-            
+        else:
+            self.zero_padding = kernel_width >> 1
+
         if dim_ordering == CPPDataType.ORDER_NCHW:
             self.output_shape[2] = int(output_width)
             self.output_shape[1] = int(output_height)

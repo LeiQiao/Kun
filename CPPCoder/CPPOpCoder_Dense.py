@@ -15,12 +15,12 @@ class CPPOpCoder_Dense:
     # initialize
     def __init__(self, input_shape, dim_ordering, weight_data, bias_data):
         assert len(weight_data.shape) == 2, "weight data must has 2 dimensions"
-        if dim_ordering == CPPDataType.ORDER_NHWC:
-            assert weight_data.shape[0] == input_shape[0], "first dimension length of weight must == input length"
-            assert weight_data.shape[1] == len(bias_data), "second dimension length of weight must == bias_data length"
-        elif dim_ordering == CPPDataType.ORDER_NCHW:
-            assert weight_data.shape[0] == len(bias_data), "first dimension length of weight must == input length"
-            assert weight_data.shape[1] == input_shape[0], "second dimension length of weight must == bias_data length"
+        # if dim_ordering == CPPDataType.ORDER_NHWC:
+        assert weight_data.shape[0] == input_shape[0], "first dimension length of weight must == input length"
+        assert weight_data.shape[1] == len(bias_data), "second dimension length of weight must == bias_data length"
+        # elif dim_ordering == CPPDataType.ORDER_NCHW:
+        #     assert weight_data.shape[1] == len(bias_data), "first dimension length of weight must == input length"
+        #     assert weight_data.shape[0] == input_shape[0], "second dimension length of weight must == bias_data length"
 
         self.name = "dense"+str(random.randint(10000, 100000))
         self.input_shape = input_shape

@@ -5,7 +5,7 @@
 int main()
 {
     Eigen::Tensor<%CPP_TYPE%, 3, Eigen::RowMajor> input(%DIM_SIZE_1%, %DIM_SIZE_2%, %DIM_SIZE_3%);
-    memcpy(input.data(), uint_test_data::unit_test_data, %DIM_SIZE_1%*%DIM_SIZE_2%*%DIM_SIZE_3%*sizeof(%CPP_TYPE%));
+    memcpy(input.data(), unit_test_data::unit_test_data, %DIM_SIZE_1%*%DIM_SIZE_2%*%DIM_SIZE_3%*sizeof(%CPP_TYPE%));
     
     Eigen::Tensor<%CPP_TYPE%, 1, Eigen::RowMajor> output;
     %MODEL_NAME%::predict(input, output, true);

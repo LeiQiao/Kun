@@ -19,7 +19,7 @@ void %NAME%(const Eigen::Tensor<%CPP_TYPE%, 1, Eigen::RowMajor>& input,
     memcpy(output.data(), %NAME%_output_matrix.data(), %OUTPUT_LENGTH%*sizeof(%CPP_TYPE%));
 
     Eigen::Tensor<%CPP_TYPE%, 1, Eigen::RowMajor> bias(%OUTPUT_LENGTH%);
-    memcpy(bias.data(), %BIAS_DATA_NAME%, %OUTPUT_LENGTH%**sizeof(%CPP_TYPE%));
+    memcpy(bias.data(), %BIAS_DATA_NAME%, %OUTPUT_LENGTH%*sizeof(%CPP_TYPE%));
     output += bias;
 }
 
