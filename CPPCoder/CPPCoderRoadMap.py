@@ -65,6 +65,7 @@ class CPPCoderRoadMap:
         file.write(template_code)
 
         # write predict function
+        self.data_holder.clear()
         for op in self.ops:
             op.dump_to_file(file, self.data_holder, cpp_type)
 
