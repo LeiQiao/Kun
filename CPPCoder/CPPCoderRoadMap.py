@@ -49,7 +49,8 @@ class CPPCoderRoadMap:
         
         # write cpp file
         file = open(cpp_filename, 'w')
-        file.write("//\n// "+self.model_name+"cpp"+"\n//\n\n")
+        file.write("//\n// "+self.model_name+"cpp"+"\n")
+        file.write("//\n// generated time: "+time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+"\n//\n\n")
         file.write("#include \""+self.model_name+".hpp\"\n\n")
         file.write("#include \""+self.model_name+"_data.hpp\"\n\n")
         file.write("#include \""+self.model_name+"_map.hpp\"\n\n")
